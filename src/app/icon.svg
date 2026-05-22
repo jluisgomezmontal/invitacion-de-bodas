@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Deep burgundy background circle -->
+  <circle cx="50" cy="50" r="50" fill="#3a0a10"/>
+  <!-- Subtle gold ring border -->
+  <circle cx="50" cy="50" r="46" fill="none" stroke="#C9A84C" stroke-width="1.5" opacity="0.55"/>
+  <!-- Gold heart -->
+  <path
+    d="M50 73 C50 73 22 56 22 37 C22 27.6 29.6 20 39 20 C44.2 20 48.6 22.8 50 26 C51.4 22.8 55.8 20 61 20 C70.4 20 78 27.6 78 37 C78 56 50 73 50 73Z"
+    fill="#C9A84C"
+  />
+  <!-- Subtle inner highlight on heart -->
+  <path
+    d="M50 68 C50 68 26 53 26 37 C26 29.8 32.8 24 39 24 C43.5 24 47.5 26.5 50 29.5"
+    fill="none"
+    stroke="rgba(255,240,180,0.25)"
+    stroke-width="2"
+    stroke-linecap="round"
+  />
+</svg>
