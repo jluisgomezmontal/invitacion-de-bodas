@@ -375,16 +375,43 @@ function InvitationCard({ onContinue }: { onContinue: () => void }) {
 /* ─────────────────────────────────────────
    Main Envelope component
 ───────────────────────────────────────── */
-type Phase = "closed" | "opening" | "revealed" | "photo";
+type Phase = "closed" | "opening" | "revealed" | "photo" | "details" | "itinerary" | "gallery" | "farewell";
 
 export function EnvelopeInvitation() {
   const [phase, setPhase] = useState<Phase>("closed");
   const [sealSpinning, setSealSpinning] = useState(false);
   const [particles, setParticles] = useState<Particle[]>([]);
+  const [galleryIndex, setGalleryIndex] = useState(0);
 
   useEffect(() => {
     setParticles(generateParticles());
   }, []);
+
+  useEffect(() => {
+    if (phase === "photo") {
+      const t = setTimeout(() => setPhase("details"), 6000);
+      return () => clearTimeout(t);
+    }
+    if (phase === "details") {
+      const t = setTimeout(() => setPhase("itinerary"), 7000);
+      return () => clearTimeout(t);
+    }
+    if (phase === "itinerary") {
+      const t = setTimeout(() => setPhase("gallery"), 8000);
+      return () => clearTimeout(t);
+    }
+  }, [phase]);
+
+  useEffect(() => {
+    if (phase !== "gallery") return;
+    if (galleryIndex < 5) {
+      const t = setTimeout(() => setGalleryIndex((i) => i + 1), 4000);
+      return () => clearTimeout(t);
+    } else {
+      const t = setTimeout(() => setPhase("farewell"), 4000);
+      return () => clearTimeout(t);
+    }
+  }, [phase, galleryIndex]);
 
   const handleOpen = () => {
     if (phase !== "closed") return;
@@ -393,7 +420,7 @@ export function EnvelopeInvitation() {
     setTimeout(() => setPhase("revealed"), 1600);
   };
 
-  const envelopeOpen = phase === "opening" || phase === "revealed";
+  const envelopeOpen = phase !== "closed";
 
   const envelopeW = 300;
   const envelopeH = 200;
@@ -597,10 +624,10 @@ export function EnvelopeInvitation() {
           top: "50%",
           left: "50%",
           transform:
-            phase === "revealed" || phase === "photo"
-              ? "translate(-50%, 130%)"
-              : "translate(-50%, -50%)",
-          opacity: phase === "revealed" || phase === "photo" ? 0 : 1,
+            phase === "closed" || phase === "opening"
+              ? "translate(-50%, -50%)"
+              : "translate(-50%, 130%)",
+          opacity: phase === "closed" || phase === "opening" ? 1 : 0,
           transition: "transform 1s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.7s ease",
           zIndex: 10,
         }}
@@ -737,6 +764,609 @@ export function EnvelopeInvitation() {
             Toca para abrir
           </p>
         )}
+      </div>
+
+      {/* ── Details / Event info scene ── */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          transform: phase === "details" ? "translateY(0)" : "translateY(100%)",
+          opacity: phase === "details" ? 1 : 0,
+          transition: "transform 1s cubic-bezier(0.34, 1.05, 0.64, 1), opacity 0.6s ease",
+          background: "radial-gradient(ellipse at 50% 40%, #6B0F1A 0%, #4a0a12 55%, #2e0509 100%)",
+          zIndex: 35,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "60px 40px 48px",
+          overflow: "hidden",
+        }}
+      >
+        {/* Gold glow top */}
+        <div
+          style={{
+            position: "absolute",
+            top: -80,
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: "160%",
+            height: 260,
+            background: "radial-gradient(ellipse at center, rgba(201,168,76,0.32) 0%, transparent 65%)",
+            pointerEvents: "none",
+          }}
+        />
+        {/* Gold glow bottom */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: -80,
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: "160%",
+            height: 260,
+            background: "radial-gradient(ellipse at center, rgba(201,168,76,0.32) 0%, transparent 65%)",
+            pointerEvents: "none",
+          }}
+        />
+
+        {/* Title */}
+        <div
+          style={{
+            textAlign: "center",
+            marginBottom: 52,
+            animation: phase === "details" ? "fadeIn 1s ease 0.2s both" : "none",
+          }}
+        >
+          <p
+            style={{
+              fontFamily: "var(--font-great-vibes), cursive",
+              fontSize: 40,
+              color: "#F5F0E8",
+              lineHeight: 1.3,
+              textShadow: "0 2px 20px rgba(0,0,0,0.45)",
+            }}
+          >
+            Únanse a nosotros
+          </p>
+          <p
+            style={{
+              fontFamily: "var(--font-great-vibes), cursive",
+              fontSize: 40,
+              color: "#F5F0E8",
+              lineHeight: 1.3,
+              textShadow: "0 2px 20px rgba(0,0,0,0.45)",
+            }}
+          >
+            para celebrar nuestro amor
+          </p>
+        </div>
+
+        {/* Event items */}
+        <div style={{ width: "100%", maxWidth: 310, display: "flex", flexDirection: "column", gap: 36 }}>
+
+          {/* Date */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 22,
+              animation: phase === "details" ? "fadeIn 1s ease 0.5s both" : "none",
+            }}
+          >
+            <div style={{ flexShrink: 0, color: "rgba(232,201,122,0.9)" }}>
+              <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+                <polyline points="8 14 10.5 16.5 16 11" />
+              </svg>
+            </div>
+            <p
+              style={{
+                fontFamily: "var(--font-cormorant), Georgia, serif",
+                fontSize: 18,
+                color: "#F5F0E8",
+                lineHeight: 1.45,
+                letterSpacing: "0.03em",
+              }}
+            >
+              Jueves, 30 de Julio
+              <br />
+              <span style={{ fontSize: 15, color: "rgba(232,201,122,0.75)", letterSpacing: "0.05em" }}>de 2026</span>
+            </p>
+          </div>
+
+          {/* Church */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 22,
+              animation: phase === "details" ? "fadeIn 1s ease 0.75s both" : "none",
+            }}
+          >
+            <div style={{ flexShrink: 0, color: "rgba(232,201,122,0.9)" }}>
+              <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="12" y1="2" x2="12" y2="6" />
+                <line x1="10" y1="4" x2="14" y2="4" />
+                <path d="M5 22 V11 L12 6 L19 11 V22 Z" />
+                <path d="M10 22 V17 Q10 15 12 15 Q14 15 14 17 V22" />
+              </svg>
+            </div>
+            <p
+              style={{
+                fontFamily: "var(--font-cormorant), Georgia, serif",
+                fontSize: 18,
+                color: "#F5F0E8",
+                lineHeight: 1.45,
+                letterSpacing: "0.03em",
+              }}
+            >
+              Misa en la Capilla
+              <br />
+              <span style={{ fontSize: 15, color: "rgba(232,201,122,0.75)", letterSpacing: "0.05em" }}>de la Santa Cruz</span>
+            </p>
+          </div>
+
+          {/* Reception */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 22,
+              animation: phase === "details" ? "fadeIn 1s ease 1s both" : "none",
+            }}
+          >
+            <div style={{ flexShrink: 0, color: "rgba(232,201,122,0.9)" }}>
+              <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 3 L5 9 L8.5 13 L1.5 13 Z" />
+                <line x1="5" y1="13" x2="5" y2="19" />
+                <line x1="3" y1="19" x2="7" y2="19" />
+                <path d="M19 3 L19 9 L22.5 13 L15.5 13 Z" />
+                <line x1="19" y1="13" x2="19" y2="19" />
+                <line x1="17" y1="19" x2="21" y2="19" />
+                <line x1="8.5" y1="7" x2="15.5" y2="5" />
+              </svg>
+            </div>
+            <p
+              style={{
+                fontFamily: "var(--font-cormorant), Georgia, serif",
+                fontSize: 18,
+                color: "#F5F0E8",
+                lineHeight: 1.45,
+                letterSpacing: "0.03em",
+              }}
+            >
+              Recepción en Hotel
+              <br />
+              <span style={{ fontSize: 15, color: "rgba(232,201,122,0.75)", letterSpacing: "0.05em" }}>Los Mangos</span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Itinerary scene ── */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          transform: phase === "itinerary" ? "translateY(0)" : "translateY(100%)",
+          opacity: phase === "itinerary" ? 1 : 0,
+          transition: "transform 1s cubic-bezier(0.34, 1.05, 0.64, 1), opacity 0.6s ease",
+          background: "radial-gradient(ellipse at 50% 40%, #6B0F1A 0%, #4a0a12 55%, #2e0509 100%)",
+          zIndex: 40,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          padding: "56px 28px 48px",
+          overflow: "hidden",
+        }}
+      >
+        {/* Gold glow top */}
+        <div style={{ position: "absolute", top: -80, left: "50%", transform: "translateX(-50%)", width: "160%", height: 260, background: "radial-gradient(ellipse at center, rgba(201,168,76,0.32) 0%, transparent 65%)", pointerEvents: "none" }} />
+        {/* Gold glow bottom */}
+        <div style={{ position: "absolute", bottom: -80, left: "50%", transform: "translateX(-50%)", width: "160%", height: 260, background: "radial-gradient(ellipse at center, rgba(201,168,76,0.32) 0%, transparent 65%)", pointerEvents: "none" }} />
+
+        {/* Title */}
+        <p
+          style={{
+            fontFamily: "var(--font-great-vibes), cursive",
+            fontSize: 48,
+            color: "#F5F0E8",
+            textShadow: "0 2px 20px rgba(0,0,0,0.45)",
+            marginBottom: 36,
+            animation: phase === "itinerary" ? "fadeIn 1s ease 0.2s both" : "none",
+          }}
+        >
+          Itinerario
+        </p>
+
+        {/* Timeline */}
+        <div style={{ position: "relative", width: "100%", maxWidth: 320 }}>
+          {/* Vertical center line */}
+          <div
+            style={{
+              position: "absolute",
+              left: "50%",
+              top: 0,
+              bottom: 0,
+              width: 1,
+              transform: "translateX(-50%)",
+              background: "linear-gradient(to bottom, transparent, rgba(201,168,76,0.65) 5%, rgba(201,168,76,0.65) 95%, transparent)",
+              boxShadow: "0 0 5px rgba(201,168,76,0.2)",
+            }}
+          />
+
+          {[
+            {
+              side: "left" as const,
+              lines: ["Ceremonia", "Religiosa"],
+              time: "5:00 PM",
+              delay: "0.45s",
+              icon: (
+                <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="12" y1="2" x2="12" y2="6" />
+                  <line x1="10" y1="4" x2="14" y2="4" />
+                  <path d="M5 22 V11 L12 6 L19 11 V22 Z" />
+                  <path d="M10 22 V17 Q10 15 12 15 Q14 15 14 17 V22" />
+                </svg>
+              ),
+            },
+            {
+              side: "right" as const,
+              lines: ["Ceremonia", "Civil"],
+              time: "7:00 PM",
+              delay: "0.7s",
+              icon: (
+                <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                  <path d="M12 17 C12 17 9.5 15.5 9.5 13.5 C9.5 12 10.5 11.5 11.3 12.1 C11.7 12.4 12 12.7 12 12.7 C12 12.7 12.3 12.4 12.7 12.1 C13.5 11.5 14.5 12 14.5 13.5 C14.5 15.5 12 17 12 17 Z" fill="currentColor" opacity="0.55" stroke="none" />
+                </svg>
+              ),
+            },
+            {
+              side: "left" as const,
+              lines: ["Recepción"],
+              time: "8:00 PM",
+              delay: "0.95s",
+              icon: (
+                <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 3 L5 9 L8.5 13 L1.5 13 Z" />
+                  <line x1="5" y1="13" x2="5" y2="19" />
+                  <line x1="3" y1="19" x2="7" y2="19" />
+                  <path d="M19 3 L19 9 L22.5 13 L15.5 13 Z" />
+                  <line x1="19" y1="13" x2="19" y2="19" />
+                  <line x1="17" y1="19" x2="21" y2="19" />
+                  <line x1="8.5" y1="7" x2="15.5" y2="5" />
+                </svg>
+              ),
+            },
+            {
+              side: "right" as const,
+              lines: ["Comienza", "el baile"],
+              time: "9:00 PM",
+              delay: "1.2s",
+              icon: (
+                <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round">
+                  <circle cx="12" cy="13" r="8" />
+                  <ellipse cx="12" cy="13" rx="4" ry="8" />
+                  <line x1="4" y1="9" x2="20" y2="9" />
+                  <line x1="4" y1="13" x2="20" y2="13" />
+                  <line x1="4" y1="17" x2="20" y2="17" />
+                  <line x1="9" y1="3" x2="15" y2="3" />
+                </svg>
+              ),
+            },
+          ].map((item, i, arr) => (
+            <div
+              key={i}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                minHeight: 110,
+                marginBottom: i < arr.length - 1 ? 4 : 0,
+                animation: phase === "itinerary" ? `fadeIn 1s ease ${item.delay} both` : "none",
+              }}
+            >
+              {/* Left slot */}
+              <div
+                style={{
+                  flex: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: 6,
+                  paddingRight: 22,
+                  opacity: item.side === "left" ? 1 : 0,
+                }}
+              >
+                <div style={{ color: "rgba(232,201,122,0.9)" }}>{item.icon}</div>
+                <div style={{ textAlign: "center" }}>
+                  {item.lines.map((line) => (
+                    <p key={line} style={{ fontFamily: "var(--font-cormorant), Georgia, serif", fontSize: 15, color: "#F5F0E8", lineHeight: 1.4 }}>{line}</p>
+                  ))}
+                  <p style={{ fontFamily: "var(--font-cormorant), Georgia, serif", fontSize: 14, color: "#C9A84C", marginTop: 3, letterSpacing: "0.05em" }}>{item.time}</p>
+                </div>
+              </div>
+
+              {/* Center dot */}
+              <div
+                style={{
+                  width: 12,
+                  height: 12,
+                  borderRadius: "50%",
+                  background: "#C9A84C",
+                  boxShadow: "0 0 0 3px rgba(201,168,76,0.18), 0 0 12px rgba(201,168,76,0.7)",
+                  flexShrink: 0,
+                }}
+              />
+
+              {/* Right slot */}
+              <div
+                style={{
+                  flex: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: 6,
+                  paddingLeft: 22,
+                  opacity: item.side === "right" ? 1 : 0,
+                }}
+              >
+                <div style={{ color: "rgba(232,201,122,0.9)" }}>{item.icon}</div>
+                <div style={{ textAlign: "center" }}>
+                  {item.lines.map((line) => (
+                    <p key={line} style={{ fontFamily: "var(--font-cormorant), Georgia, serif", fontSize: 15, color: "#F5F0E8", lineHeight: 1.4 }}>{line}</p>
+                  ))}
+                  <p style={{ fontFamily: "var(--font-cormorant), Georgia, serif", fontSize: 14, color: "#C9A84C", marginTop: 3, letterSpacing: "0.05em" }}>{item.time}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Gallery scene ── */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          transform: phase === "gallery" ? "translateY(0)" : "translateY(100%)",
+          opacity: phase === "gallery" ? 1 : 0,
+          transition: "transform 1s cubic-bezier(0.34, 1.05, 0.64, 1), opacity 0.6s ease",
+          zIndex: 45,
+          overflow: "hidden",
+        }}
+      >
+        {/* Photo layers — crossfade */}
+        {[1, 2, 3, 4, 5, 6].map((n, i) => (
+          <div
+            key={n}
+            style={{
+              position: "absolute",
+              inset: 0,
+              opacity: galleryIndex === i ? 1 : 0,
+              transition: "opacity 1.2s ease",
+            }}
+          >
+            <Image
+              src={`/assets/${n}.jpg`}
+              alt={`Foto ${n}`}
+              fill
+              style={{ objectFit: "cover", objectPosition: "center" }}
+              priority={i === 0}
+            />
+          </div>
+        ))}
+
+        {/* Gradient overlay */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: "linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 30%, transparent 62%, rgba(0,0,0,0.5) 100%)",
+            zIndex: 1,
+            pointerEvents: "none",
+          }}
+        />
+
+        {/* Title */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            padding: "58px 36px 0",
+            textAlign: "center",
+            zIndex: 2,
+            animation: phase === "gallery" ? "fadeIn 1.2s ease 0.4s both" : "none",
+          }}
+        >
+          <p
+            style={{
+              fontFamily: "var(--font-great-vibes), cursive",
+              fontSize: 38,
+              color: "#F5F0E8",
+              lineHeight: 1.3,
+              textShadow: "0 2px 24px rgba(0,0,0,0.75)",
+            }}
+          >
+            Así comienza
+          </p>
+          <p
+            style={{
+              fontFamily: "var(--font-great-vibes), cursive",
+              fontSize: 38,
+              color: "#F5F0E8",
+              lineHeight: 1.3,
+              textShadow: "0 2px 24px rgba(0,0,0,0.75)",
+            }}
+          >
+            nuestra historia
+          </p>
+        </div>
+
+        {/* Progress dots */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: 44,
+            left: 0,
+            right: 0,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 8,
+            zIndex: 2,
+          }}
+        >
+          {[0, 1, 2, 3, 4, 5].map((i) => (
+            <div
+              key={i}
+              style={{
+                height: 4,
+                width: galleryIndex === i ? 24 : 6,
+                borderRadius: 2,
+                background: galleryIndex === i ? "#C9A84C" : "rgba(255,255,255,0.35)",
+                transition: "width 0.4s ease, background 0.4s ease",
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* ── Farewell scene ── */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          transform: phase === "farewell" ? "translateY(0)" : "translateY(100%)",
+          opacity: phase === "farewell" ? 1 : 0,
+          transition: "transform 1.2s cubic-bezier(0.34, 1.05, 0.64, 1), opacity 0.8s ease",
+          background: "radial-gradient(ellipse at 50% 40%, #6B0F1A 0%, #4a0a12 55%, #2e0509 100%)",
+          zIndex: 50,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "60px 40px",
+          overflow: "hidden",
+        }}
+      >
+        {/* Gold glow top */}
+        <div style={{ position: "absolute", top: -80, left: "50%", transform: "translateX(-50%)", width: "160%", height: 280, background: "radial-gradient(ellipse at center, rgba(201,168,76,0.28) 0%, transparent 65%)", pointerEvents: "none" }} />
+        {/* Gold glow bottom */}
+        <div style={{ position: "absolute", bottom: -80, left: "50%", transform: "translateX(-50%)", width: "160%", height: 280, background: "radial-gradient(ellipse at center, rgba(201,168,76,0.28) 0%, transparent 65%)", pointerEvents: "none" }} />
+
+        {/* Botanical ornament */}
+        <div
+          style={{
+            marginBottom: 28,
+            animation: phase === "farewell" ? "fadeIn 1.2s ease 0.2s both" : "none",
+          }}
+        >
+          <svg width="64" height="60" viewBox="0 0 64 60" fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M32 56 C32 42 31 26 30 10" stroke="rgba(201,168,76,0.75)" strokeWidth="1.3" />
+            <path d="M30 16 C24 10 16 11 13 18 Q21 14 30 22" stroke="rgba(201,168,76,0.7)" strokeWidth="1.1" fill="rgba(201,168,76,0.12)" />
+            <path d="M30 10 C36 4 44 5 47 12 Q39 8 30 16" stroke="rgba(201,168,76,0.7)" strokeWidth="1.1" fill="rgba(201,168,76,0.12)" />
+            <path d="M31 30 C25 24 17 25 14 32 Q22 28 31 36" stroke="rgba(201,168,76,0.65)" strokeWidth="1.1" fill="rgba(201,168,76,0.09)" />
+            <path d="M31 26 C37 20 45 21 48 28 Q40 24 31 30" stroke="rgba(201,168,76,0.65)" strokeWidth="1.1" fill="rgba(201,168,76,0.09)" />
+            <path d="M31 44 C25 38 17 40 14 46 Q22 42 31 48" stroke="rgba(201,168,76,0.5)" strokeWidth="1" fill="rgba(201,168,76,0.07)" />
+            <path d="M31 40 C37 34 45 36 48 42 Q40 38 31 44" stroke="rgba(201,168,76,0.5)" strokeWidth="1" fill="rgba(201,168,76,0.07)" />
+          </svg>
+        </div>
+
+        {/* Names */}
+        <div
+          style={{
+            textAlign: "center",
+            animation: phase === "farewell" ? "fadeIn 1.2s ease 0.45s both" : "none",
+          }}
+        >
+          <p
+            style={{
+              fontFamily: "var(--font-cormorant), Georgia, serif",
+              fontSize: 26,
+              fontWeight: 600,
+              letterSpacing: "0.28em",
+              color: "#F5F0E8",
+              textTransform: "uppercase",
+            }}
+          >
+            Luisa &amp; Axel
+          </p>
+        </div>
+
+        {/* Divider */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+            width: "100%",
+            maxWidth: 260,
+            margin: "16px 0",
+            animation: phase === "farewell" ? "fadeIn 1.2s ease 0.6s both" : "none",
+          }}
+        >
+          <div style={{ flex: 1, height: 1, background: "rgba(201,168,76,0.4)" }} />
+          <p
+            style={{
+              fontFamily: "var(--font-cormorant), Georgia, serif",
+              fontSize: 11,
+              letterSpacing: "0.3em",
+              color: "rgba(232,201,122,0.7)",
+              textTransform: "uppercase",
+            }}
+          >
+            con amor
+          </p>
+          <div style={{ flex: 1, height: 1, background: "rgba(201,168,76,0.4)" }} />
+        </div>
+
+        {/* Quote */}
+        <div
+          style={{
+            textAlign: "center",
+            maxWidth: 300,
+            animation: phase === "farewell" ? "fadeIn 1.4s ease 0.85s both" : "none",
+          }}
+        >
+          <p
+            style={{
+              fontFamily: "var(--font-great-vibes), cursive",
+              fontSize: 28,
+              color: "#F5F0E8",
+              lineHeight: 1.55,
+              textShadow: "0 2px 16px rgba(0,0,0,0.35)",
+            }}
+          >
+            Las mejores cosas de la vida merecen ser compartidas.
+            Gracias por celebrar con nosotros!
+          </p>
+        </div>
+
+        {/* Bottom ornament */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            marginTop: 32,
+            animation: phase === "farewell" ? "fadeIn 1.2s ease 1.2s both" : "none",
+          }}
+        >
+          <div style={{ width: 40, height: 1, background: "rgba(201,168,76,0.4)" }} />
+          <div style={{ width: 5, height: 5, transform: "rotate(45deg)", background: "rgba(201,168,76,0.7)" }} />
+          <div style={{ width: 5, height: 5, borderRadius: "50%", background: "rgba(201,168,76,0.9)" }} />
+          <div style={{ width: 5, height: 5, transform: "rotate(45deg)", background: "rgba(201,168,76,0.7)" }} />
+          <div style={{ width: 40, height: 1, background: "rgba(201,168,76,0.4)" }} />
+        </div>
       </div>
 
     </div>
