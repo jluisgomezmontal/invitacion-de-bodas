@@ -20,7 +20,7 @@ export type ItineraryEvent = {
 export const weddingConfig = {
   /* ── Nombres ─────────────────────────────────────────────── */
   couple: {
-    bride: "Luisa",
+    bride: "Fernanda",
     groom: "Axel",
   },
 
