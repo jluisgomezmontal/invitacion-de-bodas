@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import { weddingConfig } from "./wedding-config";
+import type { ItineraryIconKey } from "./wedding-config";
 
 type Particle = {
   id: number;
@@ -25,7 +27,7 @@ function generateParticles(): Particle[] {
   }));
 }
 
-const WEDDING_DATE = new Date("2026-07-30T18:00:00");
+const WEDDING_DATE = new Date(weddingConfig.date.iso);
 
 function calcTimeLeft() {
   const diff = WEDDING_DATE.getTime() - Date.now();
@@ -80,7 +82,7 @@ function Countdown({ light = false }: { light?: boolean }) {
           marginBottom: 14,
         }}
       >
-        Faltan
+        {weddingConfig.countdown.label}
       </p>
       <div style={{ display: "flex", gap: 6, justifyContent: "center" }}>
         {units.map(({ label, value }) => (
@@ -222,7 +224,7 @@ function InvitationCard({ onContinue }: { onContinue: () => void }) {
               letterSpacing: "0.02em",
             }}
           >
-            Luisa
+            {weddingConfig.couple.bride}
           </div>
           <div
             className="text-center"
@@ -245,7 +247,7 @@ function InvitationCard({ onContinue }: { onContinue: () => void }) {
               color: "#1a0505",
             }}
           >
-            Axel
+            {weddingConfig.couple.groom}
           </div>
 
           {/* ornament line */}
@@ -267,7 +269,7 @@ function InvitationCard({ onContinue }: { onContinue: () => void }) {
               letterSpacing: "0.06em",
             }}
           >
-            Tenemos el honor de invitarte
+            {weddingConfig.card.inviteMain}
           </p>
           <p
             className="text-center mb-4"
@@ -279,7 +281,7 @@ function InvitationCard({ onContinue }: { onContinue: () => void }) {
               letterSpacing: "0.04em",
             }}
           >
-            a celebrar nuestra unión en matrimonio
+            {weddingConfig.card.inviteSub}
           </p>
 
           {/* second ornament */}
@@ -300,7 +302,7 @@ function InvitationCard({ onContinue }: { onContinue: () => void }) {
               textTransform: "uppercase",
             }}
           >
-            Sábado
+            {weddingConfig.date.dayOfWeek}
           </div>
           <div
             className="text-center mb-1"
@@ -312,7 +314,7 @@ function InvitationCard({ onContinue }: { onContinue: () => void }) {
               letterSpacing: "0.04em",
             }}
           >
-            14 · Junio · 2025
+            {weddingConfig.date.cardDate}
           </div>
           <div
             className="text-center mb-6"
@@ -323,7 +325,7 @@ function InvitationCard({ onContinue }: { onContinue: () => void }) {
               letterSpacing: "0.12em",
             }}
           >
-            6:00 PM
+            {weddingConfig.date.cardTime}
           </div>
 
           {/* venue */}
@@ -337,9 +339,9 @@ function InvitationCard({ onContinue }: { onContinue: () => void }) {
               letterSpacing: "0.06em",
             }}
           >
-            Hacienda San Miguel
+            {weddingConfig.venues.card.name}
             <br />
-            <span style={{ fontSize: 11, color: "#6a3030" }}>Guadalajara, Jalisco</span>
+            <span style={{ fontSize: 11, color: "#6a3030" }}>{weddingConfig.venues.card.city}</span>
           </div>
         </div>
 
@@ -365,7 +367,7 @@ function InvitationCard({ onContinue }: { onContinue: () => void }) {
               cursor: "pointer",
             }}
           >
-            Ver más
+            {weddingConfig.card.buttonLabel}
           </button>
         </div>
     </div>
@@ -404,7 +406,8 @@ export function EnvelopeInvitation() {
 
   useEffect(() => {
     if (phase !== "gallery") return;
-    if (galleryIndex < 5) {
+    const last = weddingConfig.gallery.photoCount - 1;
+    if (galleryIndex < last) {
       const t = setTimeout(() => setGalleryIndex((i) => i + 1), 4000);
       return () => clearTimeout(t);
     } else {
@@ -552,7 +555,7 @@ export function EnvelopeInvitation() {
                 textShadow: "0 2px 24px rgba(0,0,0,0.6)",
               }}
             >
-              Luisa
+              {weddingConfig.couple.bride}
             </div>
             <div
               style={{
@@ -574,7 +577,7 @@ export function EnvelopeInvitation() {
                 textShadow: "0 2px 24px rgba(0,0,0,0.6)",
               }}
             >
-              Axel
+              {weddingConfig.couple.groom}
             </div>
             <div
               style={{
@@ -586,7 +589,7 @@ export function EnvelopeInvitation() {
                 marginTop: 14,
               }}
             >
-              30 · Julio · 2026
+              {weddingConfig.date.photoDisplay}
             </div>
           </div>
 
@@ -612,7 +615,7 @@ export function EnvelopeInvitation() {
               animation: phase === "photo" ? "fadeIn 1.2s ease 0.9s both" : "none",
             }}
           >
-            Con todo nuestro amor
+            {weddingConfig.photo.tagline}
           </p>
         </div>
       </div>
@@ -761,7 +764,7 @@ export function EnvelopeInvitation() {
               animation: "fadeIn 1.5s ease 1s both",
             }}
           >
-            Toca para abrir
+            {weddingConfig.envelope.hint}
           </p>
         )}
       </div>
@@ -828,7 +831,7 @@ export function EnvelopeInvitation() {
               textShadow: "0 2px 20px rgba(0,0,0,0.45)",
             }}
           >
-            Únanse a nosotros
+            {weddingConfig.details.title1}
           </p>
           <p
             style={{
@@ -839,7 +842,7 @@ export function EnvelopeInvitation() {
               textShadow: "0 2px 20px rgba(0,0,0,0.45)",
             }}
           >
-            para celebrar nuestro amor
+            {weddingConfig.details.title2}
           </p>
         </div>
 
@@ -873,9 +876,9 @@ export function EnvelopeInvitation() {
                 letterSpacing: "0.03em",
               }}
             >
-              Jueves, 30 de Julio
+              {weddingConfig.date.detailsLine1}
               <br />
-              <span style={{ fontSize: 15, color: "rgba(232,201,122,0.75)", letterSpacing: "0.05em" }}>de 2026</span>
+              <span style={{ fontSize: 15, color: "rgba(232,201,122,0.75)", letterSpacing: "0.05em" }}>{weddingConfig.date.detailsLine2}</span>
             </p>
           </div>
 
@@ -905,9 +908,9 @@ export function EnvelopeInvitation() {
                 letterSpacing: "0.03em",
               }}
             >
-              Misa en la Capilla
+              {weddingConfig.venues.church.line1}
               <br />
-              <span style={{ fontSize: 15, color: "rgba(232,201,122,0.75)", letterSpacing: "0.05em" }}>de la Santa Cruz</span>
+              <span style={{ fontSize: 15, color: "rgba(232,201,122,0.75)", letterSpacing: "0.05em" }}>{weddingConfig.venues.church.line2}</span>
             </p>
           </div>
 
@@ -940,9 +943,9 @@ export function EnvelopeInvitation() {
                 letterSpacing: "0.03em",
               }}
             >
-              Recepción en Hotel
+              {weddingConfig.venues.reception.line1}
               <br />
-              <span style={{ fontSize: 15, color: "rgba(232,201,122,0.75)", letterSpacing: "0.05em" }}>Los Mangos</span>
+              <span style={{ fontSize: 15, color: "rgba(232,201,122,0.75)", letterSpacing: "0.05em" }}>{weddingConfig.venues.reception.line2}</span>
             </p>
           </div>
         </div>
@@ -981,7 +984,7 @@ export function EnvelopeInvitation() {
             animation: phase === "itinerary" ? "fadeIn 1s ease 0.2s both" : "none",
           }}
         >
-          Itinerario
+          {weddingConfig.itinerary.title}
         </p>
 
         {/* Timeline */}
@@ -1143,7 +1146,7 @@ export function EnvelopeInvitation() {
         }}
       >
         {/* Photo layers — crossfade */}
-        {[1, 2, 3, 4, 5, 6].map((n, i) => (
+        {Array.from({ length: weddingConfig.gallery.photoCount }, (_, i) => i + 1).map((n, i) => (
           <div
             key={n}
             style={{
@@ -1196,7 +1199,7 @@ export function EnvelopeInvitation() {
               textShadow: "0 2px 24px rgba(0,0,0,0.75)",
             }}
           >
-            Así comienza
+            {weddingConfig.gallery.title1}
           </p>
           <p
             style={{
@@ -1207,7 +1210,7 @@ export function EnvelopeInvitation() {
               textShadow: "0 2px 24px rgba(0,0,0,0.75)",
             }}
           >
-            nuestra historia
+            {weddingConfig.gallery.title2}
           </p>
         </div>
 
@@ -1225,7 +1228,7 @@ export function EnvelopeInvitation() {
             zIndex: 2,
           }}
         >
-          {[0, 1, 2, 3, 4, 5].map((i) => (
+          {Array.from({ length: weddingConfig.gallery.photoCount }, (_, i) => i).map((i) => (
             <div
               key={i}
               style={{
@@ -1298,7 +1301,7 @@ export function EnvelopeInvitation() {
               textTransform: "uppercase",
             }}
           >
-            Luisa &amp; Axel
+            {weddingConfig.couple.bride} &amp; {weddingConfig.couple.groom}
           </p>
         </div>
 
@@ -1324,7 +1327,7 @@ export function EnvelopeInvitation() {
               textTransform: "uppercase",
             }}
           >
-            con amor
+            {weddingConfig.farewell.tagline}
           </p>
           <div style={{ flex: 1, height: 1, background: "rgba(201,168,76,0.4)" }} />
         </div>
@@ -1346,8 +1349,7 @@ export function EnvelopeInvitation() {
               textShadow: "0 2px 16px rgba(0,0,0,0.35)",
             }}
           >
-            Las mejores cosas de la vida merecen ser compartidas.
-            Gracias por celebrar con nosotros!
+            {weddingConfig.farewell.quote}
           </p>
         </div>
 
